@@ -1,0 +1,14 @@
+{
+  "name": "monthly-todo-tracker",
+  "version": "2.1.0",
+  "private": true,
+  "description": "GitHub Pages monthly operations tracker with cross-device sync and image exports",
+  "scripts": {
+    "dev": "vite",
+    "test": "node tests/verify.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0"
+  }
+}

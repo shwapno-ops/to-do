@@ -1,0 +1,41 @@
+window.TRACKER_CONFIG = {
+  version: 2,
+  initialPeriod: "2026-08",
+  schedules: [
+    { id: "day-1", label: "Day 1", short: "Day 1", tone: "blue" },
+    { id: "day-2-5", label: "Day 2–5", short: "Days 2–5", tone: "violet" },
+    { id: "day-5-10", label: "Day 5–10", short: "Days 5–10", tone: "amber" },
+    { id: "every-2-days", label: "Every 2 Days", short: "Recurring", tone: "green" },
+  ],
+};
+
+window.DEFAULT_TASKS = [
+  ["zone-distribution", "day-1", "Zone Distribution File – Update & Share", true],
+  ["z-report", "day-1", "Z-Report", true],
+  ["monthly-target", "day-1", "Monthly Target File – Share", false],
+  ["manpower-list", "day-1", "Manpower List (HC) – Update", true],
+  ["visiting-schedule", "day-1", "Visiting Schedule – Compile", false],
+  ["store-assessment", "day-1", "Store Assessment File – Update", true],
+  ["stock-gap", "day-1", "Stock Gap Dashboard", false],
+  ["wastage-dashboard", "day-1", "Wastage Dashboard", false],
+  ["salary-information", "day-1", "Employee Salary Information – Update (Outlet-wise), if any", false],
+  ["churn-reactivation", "day-2-5", "Churn Rate & Reactivation Rate File – Update", false],
+  ["salary-cost", "day-2-5", "Salary & Cost Details", false],
+  ["audit-score", "day-2-5", "Audit Score", false],
+  ["turnover-ratio", "day-2-5", "Employee Turnover Ratio", false],
+  ["profitability-projection", "day-2-5", "Outlet Profitability Projection – Update (RM P&L)", false],
+  ["franchise-profitability", "day-5-10", "Franchise Profitability – Update", false],
+  [
+    "kpi-performance",
+    "day-5-10",
+    "KPI – Performance Jul ’26 to Till Date",
+    false,
+    "Business, satisfying loyal customers, skilled, empathic & accountable leadership",
+  ],
+  ["kpi-outlet", "day-5-10", "KPI – Outlet_w", false],
+  ["profitability-record", "day-5-10", "Outlet Profitability Record – Update (Excel & Google Sheet)", false],
+  ["retail-express", "day-5-10", "Retail All & Express All File – Update", false],
+  ["monthly-performance", "day-5-10", "Monthly Performance File", false],
+  ["turnaround-report", "day-5-10", "Outlet Turnaround Report – Monthly", false],
+  ["credit-card-charge", "every-2-days", "Credit Card Charge Dashboard Report – Share", false],
+].map(([id, schedule, title, completed, note = ""]) => ({ id, schedule, title, completed, note }));

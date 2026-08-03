@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0c2340">
+    <meta name="description" content="Monthly operations to-do tracker with secure cross-device sync and downloadable task cards.">
+    <title>Monthly To-Do Tracker</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+    <script src="./data.js" defer></script>
+    <script src="./cloud-config.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#tasks">Skip to task list</a>
+
+    <header class="topbar" aria-label="Application header">
+      <div class="shell topbar__inside">
+        <a class="brand" href="./" aria-label="Tracker home">
+          <span class="brand__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6.5 12.5 3.3 3.3 7.7-8" /></svg></span>
+          <span><strong>Operations Control</strong><small>Monthly task workspace</small></span>
+        </a>
+        <div class="topbar__right">
+          <span class="save-state" id="saveState"><i></i><span>Saved locally · Sign in to sync</span></span>
+          <button class="account-button" id="accountButton" type="button" aria-label="Open cloud sync account">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5" /><path d="M5.5 20a6.5 6.5 0 0 1 13 0" /></svg>
+            <span id="accountButtonText">Sign in</span>
+          </button>
+          <button class="icon-button icon-button--dark" id="printButton" type="button" aria-label="Print tracker" title="Print tracker">
+            <svg viewBox="0 0 24 24"><path d="M7 8V4h10v4M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v6H7z" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="pageTitle">
+        <div class="hero__grid" aria-hidden="true"></div>
+        <div class="shell hero__inside">
+          <div>
+            <p class="eyebrow">MONTHLY OPERATIONS PLAN</p>
+            <h1 id="pageTitle">To-Do Tracker</h1>
+            <p class="hero__lead">Track recurring work, focus on pending actions, and close the month with confidence.</p>
+          </div>
+          <label class="period-field">
+            <span>Tracking month</span>
+            <b><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" /></svg><input id="periodPicker" type="month" value="2026-08"></b>
+          </label>
+        </div>
+      </section>
+
+      <div class="shell dashboard">
+        <section class="summary" aria-label="Progress summary">
+          <article class="progress-card">
+            <div class="progress-ring" id="progressRing"><span><strong id="progressPercent">18%</strong><small>complete</small></span></div>
+            <div><p>OVERALL PROGRESS</p><h2><span id="completedCount">4</span> of <span id="totalCount">22</span> completed</h2></div>
+          </article>
+          <article class="metric"><i class="metric__icon metric__icon--green"><svg viewBox="0 0 24 24"><path d="m6.5 12.5 3.3 3.3 7.7-8" /></svg></i><div><p>COMPLETED</p><strong id="completedMetric">4</strong><small id="completedNote">18% of monthly tasks</small></div></article>
+          <article class="metric"><i class="metric__icon metric__icon--amber"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" /><path d="M12 8v4l2.5 1.5" /></svg></i><div><p>PENDING</p><strong id="pendingMetric">18</strong><small id="pendingNote">82% still to complete</small></div></article>
+          <article class="metric"><i class="metric__icon metric__icon--blue"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" /></svg></i><div><p>SCHEDULE GROUPS</p><strong id="groupMetric">4</strong><small>Day 1 through recurring</small></div></article>
+        </section>
+
+        <section class="workspace" id="tasks" aria-labelledby="tasksTitle">
+          <header class="workspace__head">
+            <div><p class="kicker">ACTION REGISTER</p><h2 id="tasksTitle">Monthly tasks</h2><small id="visibleCount">Showing all 22 tasks</small></div>
+            <button class="button button--primary" id="addTaskButton" type="button"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg><span>Add task</span></button>
+          </header>
+
+          <div class="filters">
+            <label class="search-field"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m16 16 4 4" /></svg><input id="searchInput" type="search" placeholder="Search tasks…" autocomplete="off"><kbd>/</kbd></label>
+            <div class="tabs" id="statusFilters" role="group" aria-label="Status filter">
+              <button class="is-active" type="button" data-status="all" aria-pressed="true">All <span id="allFilterCount">22</span></button>
+              <button type="button" data-status="pending" aria-pressed="false">Pending <span id="pendingFilterCount">18</span></button>
+              <button type="button" data-status="completed" aria-pressed="false">Completed <span id="completedFilterCount">4</span></button>
+            </div>
+            <label class="select-field"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" /></svg><select id="scheduleFilter" aria-label="Filter by schedule"><option value="all">All schedules</option><option value="day-1">Day 1</option><option value="day-2-5">Day 2–5</option><option value="day-5-10">Day 5–10</option><option value="every-2-days">Every 2 days</option></select></label>
+          </div>
+
+          <div class="groups" id="taskGroups"></div>
+          <div class="empty" id="emptyState" hidden><i><svg viewBox="0 0 24 24"><path d="M8 6h11M8 12h11M8 18h7" /><path d="m3 6 .8.8L5.5 5M3 12l.8.8 1.7-1.8M3 18l.8.8 1.7-1.8" /></svg></i><h3>No matching tasks</h3><p>Try a different search or filter.</p><button class="button button--secondary" id="clearFiltersButton" type="button">Clear filters</button></div>
+        </section>
+
+        <section class="utilities">
+          <div><strong>Share or back up this month</strong><span>Download a live task card, or keep a portable JSON backup.</span></div>
+          <div class="utilities__actions">
+            <button class="button button--image" id="downloadPngButton" type="button"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM7 15l3-3 2.5 2.5 2-2L18 16M8 9h.01" /></svg>Download PNG</button>
+            <button class="button button--image" id="downloadJpgButton" type="button"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM7 15l3-3 2.5 2.5 2-2L18 16M8 9h.01" /></svg>Download JPG</button>
+            <button class="button button--secondary" id="exportButton" type="button"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14" /></svg>Export backup</button>
+            <button class="button button--secondary" id="importButton" type="button"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14" /></svg>Import backup</button>
+            <button class="button button--danger" id="resetButton" type="button"><svg viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 2 7M4 10V5m0 5h5" /></svg>Reset month</button>
+            <input id="importFile" type="file" accept="application/json,.json" hidden>
+          </div>
+        </section>
+
+        <footer aria-label="Application footer"><p>Monthly To-Do Tracker <span>•</span> Sign in once to keep every device in sync.</p><button id="keyboardHelpButton" type="button">Keyboard shortcuts</button></footer>
+      </div>
+    </main>
+
+    <dialog id="taskDialog">
+      <form id="taskForm">
+        <div class="dialog__head"><div><p class="kicker">TASK DETAILS</p><h2 id="dialogTitle">Add a task</h2></div><button class="icon-button" id="closeDialogButton" type="button" aria-label="Close"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" /></svg></button></div>
+        <input id="taskId" type="hidden">
+        <label class="form-field"><span>Task name <b>*</b></span><textarea id="taskTitle" rows="3" maxlength="240" required placeholder="What needs to be completed?"></textarea><small><span id="titleCount">0</span>/240 characters</small></label>
+        <label class="form-field"><span>Schedule <b>*</b></span><select id="taskSchedule" required><option value="day-1">Day 1</option><option value="day-2-5">Day 2–5</option><option value="day-5-10">Day 5–10</option><option value="every-2-days">Every 2 days</option></select></label>
+        <label class="form-field"><span>Note <em>Optional</em></span><textarea id="taskNote" rows="2" maxlength="300" placeholder="Add an owner, link, or follow-up note"></textarea></label>
+        <label class="check-field"><input id="taskCompleted" type="checkbox"><span>Mark this task as completed</span></label>
+        <div class="dialog__actions"><button class="button button--secondary" id="cancelDialogButton" type="button">Cancel</button><button class="button button--primary" type="submit">Save task</button></div>
+      </form>
+    </dialog>
+
+    <dialog class="auth-dialog" id="authDialog">
+      <div class="auth-dialog__inside">
+        <div class="dialog__head"><div><p class="kicker">CLOUD SYNC</p><h2 id="authDialogTitle">Sync to all devices</h2></div><button class="icon-button" id="closeAuthButton" type="button" aria-label="Close"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" /></svg></button></div>
+
+        <section class="sync-intro" id="syncIntro">
+          <i><svg viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.6-7.95A6 6 0 0 1 18 8.5a4.5 4.5 0 0 1-.5 8.97H7Z" /><path d="m9 14 3-3 3 3M12 11v8" /></svg></i>
+          <div><strong>One account, the same tracker everywhere</strong><p>Sign in with the same email on any phone or computer. Every change is saved automatically and refreshed on your other open devices.</p></div>
+        </section>
+
+        <div class="setup-notice" id="setupNotice" hidden>
+          <strong>Cloud connection is not configured yet.</strong>
+          <p>Complete the one-time steps in <code>SUPABASE-SETUP.md</code>, then publish the updated <code>cloud-config.js</code>.</p>
+        </div>
+
+        <form id="authForm" class="auth-form">
+          <label class="form-field"><span>Email address <b>*</b></span><input id="authEmail" type="email" autocomplete="email" required placeholder="name@company.com"></label>
+          <label class="form-field"><span>Password <b>*</b></span><input id="authPassword" type="password" minlength="6" autocomplete="current-password" required placeholder="At least 6 characters"></label>
+          <p class="auth-message" id="authMessage" role="status" aria-live="polite"></p>
+          <button class="button button--primary auth-submit" id="authSubmitButton" type="submit">Sign in & sync</button>
+          <button class="text-button" id="switchAuthModeButton" type="button">New here? Create an account</button>
+        </form>
+
+        <section class="account-panel" id="accountPanel" hidden>
+          <div class="account-card"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5" /><path d="M5.5 20a6.5 6.5 0 0 1 13 0" /></svg></i><div><small>SIGNED IN AS</small><strong id="accountEmail"></strong><span id="accountSyncStatus">Your tracker is synced.</span></div></div>
+          <div class="account-actions"><button class="button button--primary" id="syncNowButton" type="button"><svg viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 2 7M4 10V5m0 5h5" /></svg>Sync now</button><button class="button button--secondary" id="signOutButton" type="button">Sign out</button></div>
+        </section>
+      </div>
+    </dialog>
+
+    <dialog class="shortcuts" id="shortcutDialog">
+      <div class="dialog__head"><div><p class="kicker">QUICK ACCESS</p><h2>Keyboard shortcuts</h2></div><button class="icon-button" id="closeShortcutButton" type="button" aria-label="Close"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" /></svg></button></div>
+      <dl><div><dt><kbd>/</kbd></dt><dd>Focus search</dd></div><div><dt><kbd>N</kbd></dt><dd>Add a new task</dd></div><div><dt><kbd>Esc</kbd></dt><dd>Close dialog</dd></div></dl>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <noscript><div class="noscript">JavaScript is required to edit and save this tracker.</div></noscript>
+  </body>
+</html>
